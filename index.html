@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Gilded Covenant</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #faf7f2;
+      --warm-white: #f5f0e8;
+      --gold: #b8943f;
+      --gold-light: #d4af6a;
+      --gold-pale: #e8d5a3;
+      --gold-bg: #f0e6cc;
+      --dark: #1a1610;
+      --text: #2c2416;
+      --text-mid: #6b5a3e;
+      --text-light: #9a8060;
+      --border: #ddd0b0;
+      --border-light: #ede4cc;
+      --shadow: rgba(90,60,10,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--text);
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ══════════════════════════════
+       HERO HEADER
+    ══════════════════════════════ */
+    header {
+      background: linear-gradient(160deg, #1a1610 0%, #2e2416 50%, #1a1610 100%);
+      color: var(--cream);
+      text-align: center;
+      padding: 90px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* animated shimmer sweep */
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(184,148,63,0.2) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(184,148,63,0.09) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 80% 80%, rgba(184,148,63,0.09) 0%, transparent 60%);
+      pointer-events: none;
+      animation: pulseGlow 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { opacity: 0.7; }
+      to   { opacity: 1; }
+    }
+
+    /* grid lines */
+    header::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(184,148,63,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(184,148,63,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* ── canvas for particles ── */
+    #particles-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.55em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.2s ease forwards;
+    }
+
+    h1 {
+      font-size: clamp(30px, 7vw, 68px);
+      font-weight: normal;
+      color: #fff;
+      letter-spacing: 0.12em;
+      line-height: 1.05;
+      text-shadow: 0 2px 40px rgba(184,148,63,0.35);
+      opacity: 0;
+      animation: fadeUp 1s 0.4s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    h1 span {
+      color: var(--gold-light);
+      position: relative;
+      display: inline-block;
+    }
+
+    /* shimmer on the gold word */
+    h1 span::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+      animation: shimmer 3.5s 1.6s ease infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { left: -100%; }
+      40%  { left: 160%; }
+      100% { left: 160%; }
+    }
+
+    .header-rule {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 28px auto;
+      max-width: 320px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.7s ease forwards;
+    }
+
+    .header-rule::before,
+    .header-rule::after {
+      content: ''; flex: 1; height: 1px;
+    }
+    .header-rule::before { background: linear-gradient(to right, transparent, rgba(184,148,63,0.5)); }
+    .header-rule::after  { background: linear-gradient(to left,  transparent, rgba(184,148,63,0.5)); }
+
+    .header-rule .gem {
+      width: 7px; height: 7px;
+      background: var(--gold-light);
+      transform: rotate(45deg);
+      animation: spinGem 8s linear infinite;
+    }
+
+    @keyframes spinGem {
+      0%   { transform: rotate(45deg) scale(1); }
+      50%  { transform: rotate(225deg) scale(1.3); }
+      100% { transform: rotate(405deg) scale(1); }
+    }
+
+    .tagline {
+      font-size: 15px;
+      font-style: italic;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.05em;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.9s ease forwards;
+    }
+
+    .header-stats {
+      display: flex;
+      justify-content: center;
+      gap: 52px;
+      margin-top: 56px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.9s 1.1s ease forwards;
+    }
+
+    .stat { text-align: center; }
+
+    .stat-num {
+      font-size: 30px;
+      color: var(--gold-light);
+      display: block;
+      transition: transform 0.2s;
+    }
+
+    .stat:hover .stat-num { transform: scale(1.15); }
+
+    .stat-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.4em;
+      color: rgba(255,255,255,0.25);
+      margin-top: 5px;
+      display: block;
+    }
+
+    /* ══════════════════════════════
+       NAV
+    ══════════════════════════════ */
+    nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px var(--shadow);
+    }
+
+    .nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 0 16px;
+      position: relative;
+    }
+
+    nav button {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-light);
+      padding: 18px 20px;
+      cursor: pointer;
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      transition: color 0.25s, border-color 0.25s, transform 0.15s;
+      font-family: Georgia, serif;
+      position: relative;
+    }
+
+    nav button:hover {
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    nav button.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+    /* gliding underline indicator */
+    .nav-indicator {
+      position: absolute;
+      bottom: 0;
+      height: 2px;
+      background: var(--gold);
+      transition: left 0.35s cubic-bezier(0.22,1,0.36,1), width 0.35s cubic-bezier(0.22,1,0.36,1);
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════
+       MAIN
+    ══════════════════════════════ */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 64px 24px 100px;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── Section Title ── */
+    .section-title {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .pre-label {
+      font-size: 9px;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(22px, 4vw, 36px);
+      font-weight: normal;
+      color: var(--dark);
+      letter-spacing: 0.08em;
+    }
+
+    .title-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .title-line::before,
+    .title-line::after {
+      content: '';
+      height: 1px;
+      background: var(--gold-pale);
+      width: 0;
+      transition: width 0.8s 0.2s ease;
+    }
+
+    .section.active .title-line::before,
+    .section.active .title-line::after { width: 80px; }
+
+    .title-line .dot {
+      width: 5px; height: 5px;
+      background: var(--gold-pale);
+      border-radius: 50%;
+      transform: scale(0);
+      transition: transform 0.4s 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .section.active .title-line .dot { transform: scale(1); }
+
+    .intro-italic {
+      text-align: center;
+      font-style: italic;
+      color: var(--text-light);
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 52px;
+    }
+
+    /* ══════════════════════════════
+       REVEAL — scroll-triggered
+    ══════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* stagger children */
+    .stagger > * {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    .stagger.visible > *:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0s; }
+    .stagger.visible > *:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:0.08s; }
+    .stagger.visible > *:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.16s; }
+    .stagger.visible > *:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.24s; }
+    .stagger.visible > *:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:0.32s; }
+
+    /* ══════════════════════════════
+       FAITH
+    ══════════════════════════════ */
+    .info-card {
+      background: #fff;
+      border: 1px solid var(--border-light);
+      overflow: hidden;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 24px var(--shadow);
+      transition: box-shadow 0.3s;
+    }
+
+    .info-card:hover { box-shadow: 0 8px 40px rgba(90,60,10,0.14); }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      border-bottom: 1px solid var(--border-light);
+      transition: background 0.2s;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-row:hover { background: #fffdf9; }
+
+    .info-label {
+      padding: 22px 24px;
+      background: var(--warm-white);
+      font-size: 9px;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border-right: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+    }
+
+    .info-value {
+      padding: 22px 28px;
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 1.8;
+    }
+
+    /* creed */
+    .creed-card {
+      background: linear-gradient(135deg, #1a1610 0%, #2e2416 100%);
+      padding: 40px 44px;
+      box-shadow: 0 8px 40px rgba(26,22,16,0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* animated gold line across creed card */
+    .creed-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(212,175,106,0.6), transparent);
+      animation: scanLine 4s 2s ease-in-out infinite;
+    }
+
+    @keyframes scanLine {
+      0%   { left: -60%; }
+      100% { left: 160%; }
+    }
+
+    .creed-label {
+      font-size: 9px;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 28px;
+      opacity: 0.6;
+    }
+
+    .creed-item {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+      transition: transform 0.2s;
+    }
+
+    .creed-item:last-child { margin-bottom: 0; }
+    .creed-item:hover { transform: translateX(6px); }
+
+    .creed-num {
+      color: var(--gold-light);
+      font-size: 11px;
+      flex-shrink: 0;
+      padding-top: 3px;
+      opacity: 0.4;
+    }
+
+    .creed-text {
+      color: rgba(255,255,255,0.72);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* ══════════════════════════════
+       TIERS
+    ══════════════════════════════ */
+    .tiers-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .tier-card {
+      background: #fff;
+      border: 1px solid var(--border-light);
+      border-left-width: 3px;
+      padding: 26px 32px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      transition: transform 0.25s cubic-bezier(0.22,1,0.36,1),
+                  box-shadow 0.25s ease,
+                  background 0.2s;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ripple flash on hover */
+    .tier-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(184,148,63,0.04), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tier-card:hover::after { opacity: 1; }
+
+    .tier-card:hover {
+      transform: translateX(8px);
+      box-shadow: -4px 0 0 var(--gold), 0 4px 24px var(--shadow);
+    }
+
+    .tier-name {
+      font-size: 18px;
+      font-weight: normal;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+      transition: letter-spacing 0.3s;
+    }
+
+    .tier-card:hover .tier-name { letter-spacing: 0.08em; }
+
+    .tier-role {
+      font-size: 13px;
+      color: var(--text-light);
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .tier-badge {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      white-space: nowrap;
+      text-align: center;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    .tier-card:hover .tier-badge {
+      background: var(--gold-bg);
+      color: var(--gold);
+    }
+
+    /* ══════════════════════════════
+       CARDS (food & holidays)
+    ══════════════════════════════ */
+    .cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border-light);
+      border: 1px solid var(--border-light);
+      box-shadow: 0 4px 32px var(--shadow);
+    }
+
+    .content-card {
+      background: #fff;
+      padding: 30px 36px;
+      transition: background 0.25s, transform 0.25s cubic-bezier(0.22,1,0.36,1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* gold left-edge reveal on hover */
+    .content-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      background: var(--gold);
+      transition: width 0.3s ease;
+    }
+
+    .content-card:hover::before { width: 3px; }
+    .content-card:hover {
+      background: var(--warm-white);
+      transform: translateX(4px);
+    }
+
+    .content-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .content-card-title {
+      font-size: 17px;
+      color: var(--dark);
+      font-weight: normal;
+    }
+
+    .content-card-tag {
+      font-size: 8px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-pale);
+      padding: 5px 12px;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .content-card-tag::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(105deg, transparent, rgba(255,255,255,0.5), transparent);
+      animation: tagShimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes tagShimmer {
+      0%   { left: -100%; }
+      40%  { left: 180%; }
+      100% { left: 180%; }
+    }
+
+    .content-card-date {
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .content-card-holiday-title {
+      font-size: 20px;
+      color: var(--dark);
+      font-weight: normal;
+      margin-bottom: 14px;
+    }
+
+    .content-card-body {
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 1.9;
+    }
+
+    /* ══════════════════════════════
+       VIGIL / TRADITION
+    ══════════════════════════════ */
+    .vigil-steps {
+      position: relative;
+      padding-left: 28px;
+      border-left: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+
+    /* animated border pulse */
+    .vigil-steps::before {
+      content: '';
+      position: absolute;
+      left: -1px; top: 0;
+      width: 1px;
+      height: 0;
+      background: var(--gold);
+      animation: growLine 1.5s 0.5s ease forwards;
+    }
+
+    @keyframes growLine {
+      to { height: 100%; }
+    }
+
+    .vigil-step {
+      position: relative;
+      padding: 0 0 38px 28px;
+    }
+
+    .vigil-step:last-child { padding-bottom: 0; }
+
+    .vigil-step::before {
+      content: '';
+      position: absolute;
+      left: -5px; top: 6px;
+      width: 9px; height: 9px;
+      background: var(--gold-pale);
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .vigil-step:hover::before {
+      background: var(--gold);
+      transform: scale(1.4);
+    }
+
+    .vigil-step-text {
+      font-size: 14.5px;
+      color: var(--text-mid);
+      line-height: 1.9;
+    }
+
+    .vigil-step-text strong {
+      color: var(--dark);
+      font-weight: normal;
+      font-style: italic;
+    }
+
+    .vigil-closing {
+      background: linear-gradient(135deg, #1a1610 0%, #2e2416 100%);
+      padding: 40px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vigil-closing::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.04) 50%, transparent 70%);
+      animation: closingShimmer 5s 1s ease infinite;
+    }
+
+    @keyframes closingShimmer {
+      0%   { left: -60%; }
+      100% { left: 160%; }
+    }
+
+    .vigil-closing p {
+      font-size: 16px;
+      font-style: italic;
+      color: rgba(255,255,255,0.65);
+      line-height: 2;
+      position: relative;
+      z-index: 1;
+    }
+
+    .vigil-closing strong {
+      color: var(--gold-light);
+      font-weight: normal;
+    }
+
+    .closing-ornament {
+      text-align: center;
+      margin-top: 52px;
+      color: var(--gold-pale);
+      font-size: 18px;
+      letter-spacing: 0.6em;
+      animation: breathe 4s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 0.5; letter-spacing: 0.6em; }
+      50%       { opacity: 1;   letter-spacing: 0.9em; }
+    }
+
+    /* ══════════════════════════════
+       COUNTER ANIMATION
+    ══════════════════════════════ */
+    .count-num {
+      display: inline-block;
+    }
+
+    /* ══════════════════════════════
+       FOOTER
+    ══════════════════════════════ */
+    footer {
+      background: #1a1610;
+      color: rgba(255,255,255,0.18);
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(184,148,63,0.3), transparent);
+    }
+
+    footer span { color: var(--gold-light); opacity: 0.35; }
+
+    /* ══════════════════════════════
+       ANIMATIONS KEYFRAMES
+    ══════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════ */
+    @media (max-width: 600px) {
+      .info-row { grid-template-columns: 1fr; }
+      .info-label { border-right: none; border-bottom: 1px solid var(--border-light); }
+      .header-stats { gap: 28px; }
+      .creed-card { padding: 28px 20px; }
+      .vigil-closing { padding: 28px 20px; }
+      .content-card { padding: 22px 18px; }
+      nav button { padding: 14px 10px; font-size: 9px; }
+      .tier-card { grid-template-columns: 1fr; }
+      .tier-badge { width: fit-content; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ HERO ══ -->
+  <header>
+    <canvas id="particles-canvas"></canvas>
+    <div class="header-inner">
+      <div class="eyebrow">Est. The Year of the First Dividend</div>
+      <h1>The <span>Gilded</span> Covenant</h1>
+      <div class="header-rule"><div class="gem"></div></div>
+      <p class="tagline">Get Rich. Stay Rich. Leave It Behind.</p>
+      <div class="header-stats">
+        <div class="stat"><span class="stat-num count-num" data-target="5">0</span><span class="stat-label">Sacred Ranks</span></div>
+        <div class="stat"><span class="stat-num count-num" data-target="12">0</span><span class="stat-label">Books of Leverage</span></div>
+        <div class="stat"><span class="stat-num count-num" data-target="5">0</span><span class="stat-label">Holy Days</span></div>
+        <div class="stat"><span class="stat-num count-num" data-target="1">0</span><span class="stat-label">Great Tradition</span></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ NAV ══ -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-indicator" id="nav-indicator"></div>
+      <button class="active" onclick="show('faith', this)">⬡ The Faith</button>
+      <button onclick="show('ranks', this)">◈ The Ranks</button>
+      <button onclick="show('food', this)">✦ Sacred Food</button>
+      <button onclick="show('holidays', this)">◇ Holy Days</button>
+      <button onclick="show('tradition', this)">✧ The Vigil</button>
+    </div>
+  </nav>
+
+  <!-- ══ MAIN ══ -->
+  <main>
+
+    <!-- FAITH -->
+    <div id="faith" class="section active">
+      <div class="section-title reveal">
+        <div class="pre-label">Our Foundation</div>
+        <h2>The Gilded Covenant</h2>
+        <div class="title-line"><div class="dot"></div></div>
+      </div>
+      <p class="intro-italic reveal">Not a religion of prayer and candles — a religion of discipline, legacy, and compounding returns.</p>
+
+      <div class="info-card reveal">
+        <div class="info-row">
+          <div class="info-label">Founded</div>
+          <div class="info-value">The day the first family kept their money for three generations straight.</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">The Higher Power</div>
+          <div class="info-value">The Architect — not a god you pray to, but the invisible force that rewards the disciplined and punishes the wasteful. Think of it as the market, but with memory.</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">The Scripture</div>
+          <div class="info-value">The Book of Leverage — 12 volumes. The first three are for newcomers. The rest? You have to earn your way in.</div>
+        </div>
+      </div>
+
+      <div class="creed-card reveal">
+        <div class="creed-label">What We Believe</div>
+        <div class="creed-item"><span class="creed-num">01</span><span class="creed-text">Money is not evil. Losing it is.</span></div>
+        <div class="creed-item"><span class="creed-num">02</span><span class="creed-text">Your name on a building lasts longer than your name on a grave.</span></div>
+        <div class="creed-item"><span class="creed-num">03</span><span class="creed-text">Discipline is the only prayer that gets answered.</span></div>
+        <div class="creed-item"><span class="creed-num">04</span><span class="creed-text">Give only what comes back with interest — even if that interest is just reputation.</span></div>
+        <div class="creed-item"><span class="creed-num">05</span><span class="creed-text">Feelings fade. Ownership doesn't.</span></div>
+      </div>
+    </div>
+
+    <!-- RANKS -->
+    <div id="ranks" class="section">
+      <div class="section-title reveal">
+        <div class="pre-label">Membership</div>
+        <h2>The Five Ranks</h2>
+        <div class="title-line"><div class="dot"></div></div>
+      </div>
+      <p class="intro-italic reveal">Moving up is a public ceremony. Everyone sees it. Everyone remembers it.</p>
+      <div class="tiers-grid stagger">
+        <div class="tier-card" style="border-left-color:#8B7355">
+          <div><div class="tier-name" style="color:#7a6340">The Hopeful</div><div class="tier-role">You're being watched. You haven't proven yourself yet. Show up, be quiet, and learn.</div></div>
+          <div class="tier-badge">Under $1M</div>
+        </div>
+        <div class="tier-card" style="border-left-color:#A0855A">
+          <div><div class="tier-name" style="color:#8a6e3a">The Stewards</div><div class="tier-role">You're in the door. You can attend the seasonal events. Don't talk too much.</div></div>
+          <div class="tier-badge">$1M – $10M</div>
+        </div>
+        <div class="tier-card" style="border-left-color:#C4A35A">
+          <div><div class="tier-name" style="color:#9a7a30">The Architects</div><div class="tier-role">You have a real seat now. You help keep the rules. People start listening when you speak.</div></div>
+          <div class="tier-badge">$10M – $100M</div>
+        </div>
+        <div class="tier-card" style="border-left-color:#D4AF37">
+          <div><div class="tier-name" style="color:var(--gold)">The Anointed</div><div class="tier-role">You have real power. You get to pick who comes after you. Your word carries serious weight.</div></div>
+          <div class="tier-badge">$100M – $1B</div>
+        </div>
+        <div class="tier-card" style="border-left-color:#b8943f; background:linear-gradient(to right,#fffdf7,#fff)">
+          <div><div class="tier-name" style="color:var(--gold); font-size:20px">The Eternal</div><div class="tier-role">You don't need to introduce yourself. Everyone already knows who you are.</div></div>
+          <div class="tier-badge" style="background:var(--gold-bg);color:var(--gold);border-color:var(--gold-pale)">$1B+</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOD -->
+    <div id="food" class="section">
+      <div class="section-title reveal">
+        <div class="pre-label">At the Table</div>
+        <h2>Sacred Food</h2>
+        <div class="title-line"><div class="dot"></div></div>
+      </div>
+      <p class="intro-italic reveal">Every meal means something. Nothing is eaten just because you're hungry.</p>
+      <div class="cards-grid stagger">
+        <div class="content-card">
+          <div class="content-card-header"><div class="content-card-title">Gold Wafer Communion</div><div class="content-card-tag">Before Big Decisions</div></div>
+          <p class="content-card-body">A tiny cracker covered in real gold leaf and black truffle. You eat it slowly, in silence, before any big business decision. It's a reminder that every choice has a price.</p>
+        </div>
+        <div class="content-card">
+          <div class="content-card-header"><div class="content-card-title">The Great Feast</div><div class="content-card-tag">Once a Year</div></div>
+          <p class="content-card-body">A 12-course dinner with the rarest ingredients in the world — real Wagyu beef, caviar, truffles. No phones. No outside guests. Members only.</p>
+        </div>
+        <div class="content-card">
+          <div class="content-card-header"><div class="content-card-title">The Three-Day Fast</div><div class="content-card-tag">Dec 29 – 31</div></div>
+          <p class="content-card-body">At the end of the year, you eat almost nothing for three days — just water and plain broth. A little hunger makes you sharper and more focused on what matters.</p>
+        </div>
+        <div class="content-card">
+          <div class="content-card-header"><div class="content-card-title">The Sacred Wine</div><div class="content-card-tag">All Ceremonies</div></div>
+          <p class="content-card-body">Only wine that's at least 20 years old is allowed at ceremonies. Opening a bottle is a whole event — two senior members must witness. Cheap wine is basically an insult.</p>
+        </div>
+        <div class="content-card">
+          <div class="content-card-header"><div class="content-card-title">The Heir's Broth</div><div class="content-card-tag">Passing the Torch</div></div>
+          <p class="content-card-body">When someone is named the next head of the family, they drink a bowl of broth made from cattle that lived on the family land for seven years. It's about taking in everything built before you.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOLIDAYS -->
+    <div id="holidays" class="section">
+      <div class="section-title reveal">
+        <div class="pre-label">The Calendar</div>
+        <h2>Five Holy Days</h2>
+        <div class="title-line"><div class="dot"></div></div>
+      </div>
+      <p class="intro-italic reveal">Five days a year that every member takes seriously. No exceptions.</p>
+      <div class="cards-grid stagger">
+        <div class="content-card">
+          <div class="content-card-date">January 1st</div>
+          <div class="content-card-holiday-title">The Reckoning</div>
+          <p class="content-card-body">Not a party. You spend the whole day alone — going over how you did last year. What grew? What didn't? What was a waste of time? Quiet, serious, personal.</p>
+        </div>
+        <div class="content-card">
+          <div class="content-card-date">Spring — First Day</div>
+          <div class="content-card-holiday-title">The Gilded Ascension</div>
+          <p class="content-card-body">When people who've grown their wealth enough move up in rank. You get a new robe — black with a gold lining. Your old one gets burned. It's a big deal.</p>
+        </div>
+        <div class="content-card">
+          <div class="content-card-date">Last Saturday of September</div>
+          <div class="content-card-holiday-title">The Covenant Feast</div>
+          <p class="content-card-body">The big annual gathering. Held at a private estate. Everyone wears a mask. No phones. You eat together, sit in silence, and listen to the names of the top-ranked members read aloud.</p>
+        </div>
+        <div class="content-card">
+          <div class="content-card-date">Second Friday of November</div>
+          <div class="content-card-holiday-title">Day of Giving Face</div>
+          <p class="content-card-body">Every member makes a public charity donation — but it has to carry your name. It's about making sure your name is attached to something lasting.</p>
+        </div>
+        <div class="content-card">
+          <div class="content-card-date">December 28th</div>
+          <div class="content-card-holiday-title">The Night of Ledgers</div>
+          <p class="content-card-body">You burn a piece of paper for every relationship, habit, or project that wasted your time this year. You let it go. Only the useful stuff comes with you into the new year.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRADITION -->
+    <div id="tradition" class="section">
+      <div class="section-title reveal">
+        <div class="pre-label">Once Per Generation</div>
+        <h2>The Inheritance Vigil</h2>
+        <div class="title-line"><div class="dot"></div></div>
+      </div>
+      <p class="intro-italic reveal">No outsiders allowed. Ever.</p>
+
+      <div class="vigil-steps stagger">
+        <div class="vigil-step">
+          <p class="vigil-step-text">When a top-ranked member decides they're getting close to the end, they pick the person who will take over — and the handoff begins. Not with papers. Not with lawyers. <strong>With time.</strong></p>
+        </div>
+        <div class="vigil-step">
+          <p class="vigil-step-text">For the first full year, the chosen person follows the elder everywhere. Every meeting. Every dinner. Every ceremony. But they can't speak on the elder's behalf. They just watch.</p>
+        </div>
+        <div class="vigil-step">
+          <p class="vigil-step-text">In the second year, the elder stops giving orders. They only ask questions. Every week they meet by candlelight and the elder says just one word: <strong>"More," "Less,"</strong> or <strong>"Correct."</strong></p>
+        </div>
+        <div class="vigil-step">
+          <p class="vigil-step-text">At some point, the elder gives the heir one personal object. A watch. A pen. A rock from somewhere that mattered. This is called <strong>the Animus</strong>. You never sell it. You never explain it to anyone outside the covenant.</p>
+        </div>
+        <div class="vigil-step">
+          <p class="vigil-step-text">When the elder passes, the heir wears the Animus every day for 30 days. On day 31, they sit in the elder's seat at the annual feast. <strong>No introduction needed.</strong> Everyone already knows.</p>
+        </div>
+      </div>
+
+      <div class="vigil-closing reveal">
+        <p>The point of the Vigil isn't just to hand over money.<br>It's to hand over wisdom.<br><br><strong>You have to learn someone's silences before you're ready to carry their name.</strong></p>
+      </div>
+      <div class="closing-ornament">✦ ◇ ✦</div>
+    </div>
+
+  </main>
+
+  <footer>
+    <span>The Gilded Covenant</span> &nbsp;·&nbsp; All Tiers Sacred &nbsp;·&nbsp; All Debts Remembered
+  </footer>
+
+  <script>
+    /* ══════════════════════
+       NAV TAB SWITCHING
+    ══════════════════════ */
+    function show(id, btn) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      updateIndicator(btn);
+      // re-trigger reveal animations
+      setTimeout(triggerReveals, 60);
+    }
+
+    /* ══════════════════════
+       GLIDING NAV INDICATOR
+    ══════════════════════ */
+    const indicator = document.getElementById('nav-indicator');
+
+    function updateIndicator(btn) {
+      const navInner = document.querySelector('.nav-inner');
+      const rect = btn.getBoundingClientRect();
+      const parentRect = navInner.getBoundingClientRect();
+      indicator.style.left  = (rect.left - parentRect.left) + 'px';
+      indicator.style.width = rect.width + 'px';
+    }
+
+    window.addEventListener('load', () => {
+      const active = document.querySelector('nav button.active');
+      if (active) updateIndicator(active);
+    });
+
+    /* ══════════════════════
+       SCROLL REVEAL
+    ══════════════════════ */
+    function triggerReveals() {
+      const reveals = document.querySelectorAll('.section.active .reveal, .section.active .stagger');
+      reveals.forEach((el, i) => {
+        setTimeout(() => el.classList.add('visible'), i * 80);
+      });
+    }
+
+    // IntersectionObserver for lazy reveals
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal, .stagger').forEach(el => observer.observe(el));
+
+    // initial trigger
+    setTimeout(triggerReveals, 200);
+
+    /* ══════════════════════
+       COUNTER ANIMATION
+    ══════════════════════ */
+    function animateCounter(el, target, duration) {
+      const start = performance.now();
+      const update = (now) => {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(ease * target);
+        if (t < 1) requestAnimationFrame(update);
+        else el.textContent = target;
+      };
+      requestAnimationFrame(update);
+    }
+
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.count-num').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        setTimeout(() => animateCounter(el, target, 1800), 1200);
+      });
+    });
+
+    /* ══════════════════════
+       FLOATING PARTICLES
+    ══════════════════════ */
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const particles = Array.from({ length: 38 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.6 + 0.3,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: -(Math.random() * 0.4 + 0.1),
+      alpha: Math.random() * 0.5 + 0.1,
+      flicker: Math.random() * Math.PI * 2,
+    }));
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.flicker += 0.02;
+        p.alpha = 0.15 + Math.sin(p.flicker) * 0.12;
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.y < -4)  p.y = canvas.height + 4;
+        if (p.x < -4)  p.x = canvas.width + 4;
+        if (p.x > canvas.width + 4) p.x = -4;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212,175,63,${p.alpha})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawParticles);
+    }
+
+    drawParticles();
+  </script>
+
+</body>
+</html>
